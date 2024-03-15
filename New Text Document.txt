@@ -1,0 +1,57 @@
+def read_all_file(file): # دالة قراءة الملف
+    f = open(file)
+    map1 = {}
+    for line in f:
+        line = line.replace('\n','')  
+        rules = line.split('>') 
+        rules[0] = rules[0].strip()
+        map1[rules[0]] = rules[1]
+    return map1
+
+def right_prud(map):# دالة قراءة الجزء الايمن من الكرامر
+    for element, body in map.items() :
+        body = body.strip()
+        map[element]= body.split('|') # دالة strip لحذف الفواصل بين البرودكت |
+    return map
+ 
+
+def elimination(map):# دالة التخلص من الليفت ريكرجن 
+    newRules = {} #map
+    exist = False
+    for key,value in map.items():
+        for v in value :  #v 
+            if v[0] == key :
+                exist = True
+        if exist==False:
+            newRules[key] = value 
+        else :
+            key1 = key
+            key2 = key+'\''
+            value1 = []
+            value2 = [] 
+            for v in value :
+                if v[0] != key:
+                    value1.append(v+key2)
+                else :
+                    value2.append(v[1:]+key2)    
+            value2.append('epsilon')
+            newRules[key1] = value1
+            newRules[key2] = value2
+        exist = False    
+        
+    return newRules        
+# بالاسفل استدعاء الدوال بالاكمل ليتم تنفيذها  
+mappy=read_all_file("leftRecursionInput.txt")
+ 
+right = right_prud(mappy)
+eliminate = elimination(right)
+f = open("result.txt", "w")
+for key,value in eliminate.items() :
+    f.write(key+' > ') #E  : BE'
+    for v in value :   #E' : aE'|e
+        f.write(v)
+        if not v is value[-1]:
+            f.write(' | ')
+    f.write('\n')    
+    
+f.close()
